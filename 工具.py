@@ -1,4 +1,6 @@
+import pandas as pd;import numpy as np;from collections import Counter
 冓 = {"⿰":2,"⿲":3,"⿱":2,"⿳":3,"⿴":2,"⿵":2,"⿶":2,"⿷":2,"⿸":2,"⿹":2,"⿺":2,"⿻":2,"⿼":2,"⿽":2,"⿾":1,"⿿":1,"４":4,"５":5,"Ｔ":3,"Ｙ":3,"Ａ":1,"＋":1}
+歸并件 = ['一乛','冈网']
 def 構字遞歸(構字式:str, 到=0, 級=0):
 	""" 僅遞歸，不生成圖像。結構符歬置 """
 	構成 = ''
@@ -24,3 +26,22 @@ def 檢構字式(構字式:str):
 		raise ValueError('構字式有誤！或有宂餘結構符（缺少部件），或順序有誤。')
 	else:
 		raise ValueError('構字式有誤！或有宂餘部件（缺少結構符），或順序有誤。')
+def 依構件排序(構件列):
+	序 = []
+	for 構件 in 構件列:
+		if len(構件)==1:
+			序.append(1)
+		elif len(構件)==0:
+			序.append(np.inf)
+		else:
+			序.append(5)
+	return 序
+def 依備註排序(註列):
+	訛宂次 = {"異體":1, "倭":3, "簡体":3, "訛":5}
+	序 = []
+	for 註 in 註列:
+		if 註 in 訛宂次.keys():
+			序.append(訛宂次[註])
+		else:
+			序.append(0)
+	return 序

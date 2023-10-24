@@ -38,11 +38,18 @@ def 依構件排序(構件列):
 			序.append(5)
 	return 序
 def 依備註排序(註列):
-	訛宂次 = {"異體":1, "倭":3, "簡体":3, "訛":5}
+	訛宂次 = {"異體":1, "偏旁":2, "倭":3, "簡体":3, "訛":5}
 	序 = []
 	for 註 in 註列:
 		if 註 in 訛宂次.keys():
 			序.append(訛宂次[註])
 		else:
 			序.append(0)
+	return 序
+def 攏(字列):
+	序 = []
+	for 字 in 字列:
+		歸并組 = [x for x in 歸并件 if 字 in x]
+		反倒轉組 = [x for x in 反倒轉件 if 字 in x]
+		#
 	return 序

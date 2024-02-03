@@ -8,6 +8,10 @@
 \newCJKfontfamily[puncts]\puncts[RawFeature={vertical:+vert}, ItalicFont=標點符號-R]{標點符號-R}
 \xeCJKsetup{PunctFamily=puncts, CJKecglue=\null}% 標點字型fangsung，漢字與西文、符號之間隔
 \setmainfont{仿宋}%Times New Roman
+\xeCJKsetup{
+	AutoFallBack=true,  %開啓字體回退，即字體遇到不能顯示的字符時，使用後備字體顯示
+}
+\setCJKfallbackfamilyfont{\CJKrmdefault}{{HYFangSong_GB18030Super-ExtB},{KaiXinSongB}}
 
 \usepackage[backend=biber,style=ieee,citestyle=numeric,giveninits=true,sorting=none,maxbibnames=99,dashed=false,doi=false]{biblatex}
 \makeatletter

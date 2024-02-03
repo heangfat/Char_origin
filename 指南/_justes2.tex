@@ -1,0 +1,58 @@
+
+%\usepackage[colorlinks,linkcolor=靛青]{hyperref}% 影響扉䈎
+\newcommand*\陰文[1]{\tikz[baseline=(char.base)]{
+			\node[shape=rectangle,fill=black!90,draw,inner sep=0pt] (char) {\color{white}#1};}}
+\setCJKmonofont[RawFeature={vertical:+vert}]{仿宋} % 等寬 for \texttt
+\setCJKsansfont[RawFeature={vertical:+vert}]{黑体} % 无襯綫 for \textsf %[Vertical=RotatedGlyphs]
+\newCJKfontfamily[fangsung]\fangsung[RawFeature={vertical:+vert}, ItalicFont=文悦古体仿宋 (非商业用途)]{FangSong}
+\newCJKfontfamily[puncts]\puncts[RawFeature={vertical:+vert}, ItalicFont=標點符號-R]{標點符號-R}
+\xeCJKsetup{PunctFamily=puncts, CJKecglue=\null}% 標點字型fangsung，漢字與西文、符號之間隔
+\setmainfont{仿宋}%Times New Roman
+
+\usepackage[backend=biber,style=ieee,citestyle=numeric,giveninits=true,sorting=none,maxbibnames=99,dashed=false,doi=false]{biblatex}
+\addbibresource{迩原參攷文獻.bib}
+\AtBeginBibliography{\vspace*{-10pt}}
+\setlength\bibitemsep{0pt}
+\renewcommand*{\newunitpunct}{　}
+\DeclareFieldFormat[article,incollection,unpublished,book]{title}{\fangsung#1}
+\DeclareFieldFormat{labelnumberwidth}{\rotatebox{90}{\kern-.5em\fontspec{筭數}[RawFeature={+ss01,+fwid}]{#1}}}
+\DeclareFieldFormat[article,incollection,unpublished,book]{volume}{#1}
+\DeclareFieldFormat{pages}{\raisebox{-.3em}{#1}}
+\DeclareFieldFormat{date}{\raisebox{-.3em}{#1}}
+\DeclareBibliographyDriver{book}{%
+	\printnames{author}%
+	\newunit\newblock
+	\printfield{title}%
+	\newunit\newblock
+	\printlist{publisher}%
+	\newunit
+	\printlist{location}%
+	\newunit\newblock
+	\rotatebox{90}{\kern-1.5em\fontspec{筭數}[RawFeature={+ss01}]{\printfield{year}}}年\printfield{month}%
+	%\finentry
+}
+\DeclareBibliographyDriver{article}{%
+	\printnames{author}%
+	\newunit\newblock
+	\printfield{title}%
+	\newunit\newblock
+	\printfield{journaltitle}%
+	{\fangsung\printfield{volume}}%
+	\newunit\newblock\quad
+	\rotatebox{90}{\kern-1.5em\fontspec{筭數}[RawFeature={+ss01}]{\printfield{year}}}年\printfield{month}%
+	%\finentry
+}
+\DefineBibliographyStrings{english}{
+	january = \rotatebox{90}{\kern-.5em\fontspec{筭數}[RawFeature={+ss01,+fwid}]{1}}月,
+	february = \rotatebox{90}{\kern-.5em\fontspec{筭數}[RawFeature={+ss01,+fwid}]{2}}月,
+	march = \rotatebox{90}{\kern-.5em\fontspec{筭數}[RawFeature={+ss01,+fwid}]{3}}月,
+	april = \rotatebox{90}{\kern-.5em\fontspec{筭數}[RawFeature={+ss01,+fwid}]{4}}月,
+	may =\rotatebox{90}{\kern-.5em\fontspec{筭數}[RawFeature={+ss01,+fwid}]{5}}月,
+	june = \rotatebox{90}{\kern-.5em\fontspec{筭數}[RawFeature={+ss01,+fwid}]{6}}月,
+	july = \rotatebox{90}{\kern-.5em\fontspec{筭數}[RawFeature={+ss01,+fwid}]{7}}月,
+	august = \rotatebox{90}{\kern-.5em\fontspec{筭數}[RawFeature={+ss01,+fwid}]{8}}月,
+	september = \rotatebox{90}{\kern-.5em\fontspec{筭數}[RawFeature={+ss01,+fwid}]{9}}月,
+	october = \rotatebox{90}{\kern-.2em\fontspec{筭數}[RawFeature={+ss01}]{10}}月,
+	november = \rotatebox{90}{\kern-.2em\fontspec{筭數}[RawFeature={+ss01}]{11}}月,
+	december = \rotatebox{90}{\kern-.2em\fontspec{筭數}[RawFeature={+ss01}]{12}}月,
+}

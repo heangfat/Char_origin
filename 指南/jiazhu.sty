@@ -1,0 +1,779 @@
+%%
+%% This is file `jiazhu.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% jiazhu.dtx  (with options: `package')
+%% 
+%%     Copyright (C) 2018-2020 by Qing Lee <sobenlee@gmail.com>
+%%     Copyright (C)      2020 by Ruixi Zhang <ruixizhang42@gmail.com>
+%% --------------------------------------------------------------------------
+%% 
+%%     This work may be distributed and/or modified under the
+%%     conditions of the LaTeX Project Public License, either
+%%     version 1.3c of this license or (at your option) any later
+%%     version. This version of this license is in
+%%        http://www.latex-project.org/lppl/lppl-1-3c.txt
+%%     and the latest version of this license is in
+%%        http://www.latex-project.org/lppl.txt
+%%     and version 1.3 or later is part of all distributions of
+%%     LaTeX version 2005/12/01 or later.
+%% 
+%%     This work has the LPPL maintenance status `maintained'.
+%% 
+%%     The Current Maintainer of this work is Qing Lee.
+%% 
+%% --------------------------------------------------------------------------
+%% 
+\NeedsTeXFormat{LaTeX2e}
+\RequirePackage{expl3}
+\GetIdInfo$Id$
+  {Jiazhu/Warichu Support}
+\ProvidesExplPackage{\ExplFileName}
+  {\ExplFileDate}{0}{\ExplFileDescription}
+\msg_new:nnn { jiazhu } { l3-too-old }
+  {
+    Support~package~'expl3'~too~old. \\\\
+    Please~update~an~up~to~date~version~of~the~bundles\\\\
+    'l3kernel'~and~'l3packages'\\\\
+    using~your~TeX~package~manager~or~from~CTAN.
+  }
+\@ifpackagelater { expl3 } { 2019/03/05 } { }
+  { \msg_error:nn { jiazhu } { l3-too-old } }
+\RequirePackage { xparse }
+\cs_new_protected:Npn \jiazhu:nn #1
+  {
+    \group_begin:
+      \tl_if_novalue:nF {#1}
+        { \keys_set:nn { jiazhu } {#1} }
+      \mode_if_vertical:TF
+        { \__jiazhu_vertical_mode:n }
+        {
+          \mode_if_horizontal:TF
+            {
+              \mode_if_inner:TF
+                { \__jiazhu_inner_mode:n }
+                { \__jiazhu_horizontal_mode:n }
+            }
+            { \__jiazhu_inner_mode:n }
+        }
+  }
+\cs_new_protected:Npn \__jiazhu_vertical_mode:n
+  {
+    \mode_leave_vertical:
+    \__jiazhu_set_line_width:
+    \bool_set_true:N \l__jiazhu_full_line_bool
+    \bool_set_false:N \l__jiazhu_before_skip_bool
+    \dim_set:Nn \l__jiazhu_remaining_width_dim
+      {
+        \int_compare:nNnTF \tex_lastnodetype:D = \c_one_int
+          { \l__jiazhu_line_width_dim - \tex_parindent:D }
+          { \l__jiazhu_line_width_dim }
+      }
+    \__jiazhu_boot:n
+  }
+\bool_new:N \l__jiazhu_full_line_bool
+\dim_new:N \l__jiazhu_remaining_width_dim
+\cs_new_protected:Npn \__jiazhu_horizontal_mode:n
+  {
+    \__jiazhu_extract_previous_line_width:
+    \__jiazhu_set_line_width:
+    \dim_set_eq:NN \l__jiazhu_remaining_width_dim \l__jiazhu_line_width_dim
+    \int_compare:nNnTF \tex_lastnodetype:D = { 12 }
+      {
+        \bool_set_false:N \l__jiazhu_full_line_bool
+        \bool_set_true:N \l__jiazhu_before_skip_bool
+        \dim_sub:Nn \l__jiazhu_remaining_width_dim
+          { \g__jiazhu_previous_line_width_dim }
+      }
+      {
+        \bool_set_true:N \l__jiazhu_full_line_bool
+        \bool_set_false:N \l__jiazhu_before_skip_bool
+      }
+    \__jiazhu_boot:n
+  }
+\cs_new_protected:Npn \__jiazhu_inner_mode:n
+  {
+    \bool_set_false:N \l__jiazhu_full_line_bool
+    \int_compare:nNnTF \tex_lastnodetype:D = { -1 }
+      { \bool_set_false:N \l__jiazhu_before_skip_bool }
+      { \bool_set_true:N \l__jiazhu_before_skip_bool }
+    \dim_set_eq:NN \l__jiazhu_remaining_width_dim \c_max_dim
+    \__jiazhu_boot:n
+  }
+\cs_new_protected:Npn \__jiazhu_set_line_width:
+  {
+    \dim_set:Nn \l__jiazhu_line_width_dim
+      {
+          \dim_min:nn { \tex_hsize:D } { \linewidth }
+        - \tex_leftskip:D
+        - \tex_rightskip:D
+      }
+  }
+\dim_new:N \l__jiazhu_line_width_dim
+\cs_new_protected:Npn \__jiazhu_extract_previous_line_width:
+  {
+    \group_begin:
+      \skip_set_eq:NN \tex_parfillskip:D \c__jiazhu_fil_skip
+      \c_math_toggle_token \c_math_toggle_token
+        \dim_gset_eq:NN \g__jiazhu_previous_line_width_dim \tex_predisplaysize:D
+        \int_set_eq:NN \tex_predisplaypenalty:D  \c__jiazhu_nobreak_int
+        \int_set_eq:NN \tex_postdisplaypenalty:D \c__jiazhu_nobreak_int
+        \skip_set:Nn \tex_abovedisplayskip:D
+          {
+            \dim_compare:nNnTF
+              { \dim_abs:n { \g__jiazhu_previous_line_width_dim } } < \c_max_dim
+              { - \l__jiazhu_shift_dim - \tex_baselineskip:D }
+              { - \l__jiazhu_shift_dim }
+          }
+        \skip_set:Nn \tex_belowdisplayskip:D { - \tex_baselineskip:D }
+        \skip_set_eq:NN \tex_abovedisplayshortskip:D \tex_abovedisplayskip:D
+        \skip_set_eq:NN \tex_belowdisplayshortskip:D \tex_belowdisplayskip:D
+      \c_math_toggle_token \c_math_toggle_token
+    \group_end:
+    \int_set:Nn \tex_prevgraf:D { \tex_prevgraf:D - 3 }
+    \dim_compare:nNnTF
+      { \dim_abs:n { \g__jiazhu_previous_line_width_dim } } < \c_max_dim
+      {
+        \dim_gsub:Nn \g__jiazhu_previous_line_width_dim
+          {
+            \int_compare:nNnTF \tex_parshape:D = \c_one_int
+              { \tex_leftskip:D + 2em + \tex_parshapeindent:D \c_one_int }
+              { \tex_leftskip:D + 2em }
+          }
+        \tex_kern:D \g__jiazhu_previous_line_width_dim
+      }
+      { \dim_gzero:N \g__jiazhu_previous_line_width_dim }
+  }
+\dim_new:N \g__jiazhu_previous_line_width_dim
+\int_const:Nn \c__jiazhu_break_int   { -10000 }
+\int_const:Nn \c__jiazhu_nobreak_int {  10000 }
+\cs_new_protected:Npn \__jiazhu_boot:n #1
+  {
+    \__jiazhu_tex_parameter:
+    \dim_set:Nn \l__jiazhu_outer_unit_dim { \f@size pt }
+    \fp_set:Nn \l__jiazhu_tmp_fp { \l__jiazhu_ratio_fp * \f@size }
+    \fontsize
+      { \fp_use:N \l__jiazhu_tmp_fp }
+      { \fp_use:N \l__jiazhu_tmp_fp }
+    \linespread { 1 }
+    \dim_set:Nn \tex_lineskiplimit:D { - \c_max_dim }
+    \tl_use:N \l__jiazhu_format_tl
+    \selectfont
+    \dim_set:Nn \l__jiazhu_unit_dim { \f@size pt }
+    \hbox_set:Nn \l__jiazhu_text_box
+      {
+        \__jiazhu_insert_jzideoht_strut:
+        \tex_ignorespaces:D #1 \tex_unskip:D
+      }
+    \__jiazhu_make_opening_closing_box:
+    \dim_set:Nn \tex_splitmaxdepth:D { \box_dp:N \strutbox }
+    \skip_set:Nn \l__jiazhu_good_break_skip
+      { \c_zero_dim plus 0.5\l__jiazhu_outer_unit_dim }
+    \skip_set:Nn \l__jiazhu_unit_stretch_skip
+      { \c_zero_dim plus \l__jiazhu_unit_dim }
+    \__jiazhu_calc_box_offset:
+    \__jiazhu_set_before_skip:
+    \__jiazhu_processing:
+  }
+\fp_new:N \l__jiazhu_tmp_fp
+\box_new:N \l__jiazhu_text_box
+\dim_new:N \l__jiazhu_unit_dim
+\dim_new:N \l__jiazhu_outer_unit_dim
+\skip_new:N \l__jiazhu_unit_stretch_skip
+\cs_new_protected:Npn \__jiazhu_tex_parameter:
+  {
+    \@parboxrestore
+    \tex_everypar:D { { \box_set_to_last:N \c_zero_int } }
+    \dim_zero:N \tex_emergencystretch:D
+    \dim_set_eq:NN \tex_hfuzz:D \c_max_dim
+    \dim_set_eq:NN \tex_vfuzz:D \c_max_dim
+    \int_set_eq:NN \tex_hbadness:D \c_max_int
+    \int_set_eq:NN \tex_vbadness:D \c_max_int
+    \int_set:Nn \tex_tolerance:D { 1000 }
+    \skip_zero:N \tex_splittopskip:D
+    \int_zero:N \tex_linepenalty:D
+    \int_zero:N \tex_clubpenalty:D
+    \int_zero:N \tex_widowpenalty:D
+  }
+\cs_new_protected:Npn \__jiazhu_insert_jzideoht_strut:
+  {
+    \tex_vrule:D
+      height
+        \fp_compare:nNnTF \l__jiazhu_jzideoht_fp = \c_zero_fp
+          { \fp_use:N \l__jiazhu_ideoht_fp }
+          { \fp_use:N \l__jiazhu_jzideoht_fp }
+        \l__jiazhu_unit_dim
+      depth \c_zero_dim
+      width \c_zero_dim
+  }
+\cs_new_protected:Npn \__jiazhu_make_opening_closing_box:
+  {
+    \tl_if_empty:NTF \l__jiazhu_opening_tl
+      { \box_clear:N \l__jiazhu_opening_box }
+      {
+        \hbox_set:Nn \l__jiazhu_opening_box
+          {
+            \fontsize
+              { \fp_use:N \l__jiazhu_bracket_ratio_fp \l__jiazhu_unit_dim }
+              { \c_zero_skip }
+            \selectfont \l__jiazhu_opening_tl
+          }
+        \dim_sub:Nn \l__jiazhu_remaining_width_dim
+          { \box_wd:N \l__jiazhu_opening_box }
+      }
+    \tl_if_empty:NTF \l__jiazhu_closing_tl
+      { \box_clear:N \l__jiazhu_closing_box }
+      {
+        \hbox_set:Nn \l__jiazhu_closing_box
+          {
+            \fontsize
+              { \fp_use:N \l__jiazhu_bracket_ratio_fp \l__jiazhu_unit_dim }
+              { \c_zero_skip }
+            \selectfont \l__jiazhu_closing_tl \tex_unskip:D
+          }
+      }
+  }
+\cs_new_protected:Npn \__jiazhu_put_opening_box:
+  {
+    \bool_if:NT \l__jiazhu_before_skip_bool
+      { \skip_horizontal:N \l__jiazhu_before_skip }
+    \box_if_empty:NF \l__jiazhu_opening_box
+      { \__jiazhu_put_mark_box:N \l__jiazhu_opening_box }
+    \cs_set_eq:NN \__jiazhu_put_opening_box: \prg_do_nothing:
+  }
+\cs_new_protected:Npn \__jiazhu_put_closing_box:
+  {
+    \box_if_empty:NF \l__jiazhu_closing_box
+      { \__jiazhu_put_mark_box:N \l__jiazhu_closing_box }
+  }
+\box_new:N \l__jiazhu_opening_box
+\box_new:N \l__jiazhu_closing_box
+\cs_new_protected:Npn \__jiazhu_calc_box_offset:
+  {
+    \exp_args:Nxx \__jiazhu_calc_box_offset_aux:nn
+      {
+        \fp_compare:nNnTF \l__jiazhu_jzideoht_fp = \c_zero_fp
+          { \fp_eval:n { \l__jiazhu_ideoht_fp   - 0.5 } }
+          { \fp_eval:n { \l__jiazhu_jzideoht_fp - 0.5 } }
+      }
+      { \fp_eval:n { \l__jiazhu_ideoht_fp - 0.5 } }
+  }
+\cs_new_protected:Npn \__jiazhu_calc_box_offset_aux:nn #1#2
+  {
+    \dim_set:Nn \l__jiazhu_box_offset_dim
+      {
+          #1 \l__jiazhu_unit_dim
+        + \int_eval:n { \l__jiazhu_lines_int - 1 } \tex_baselineskip:D / 2
+        - #2 \l__jiazhu_outer_unit_dim
+      }
+    \dim_set:Nn \l__jiazhu_mark_offset_dim
+      {
+          \fp_eval:n { #1 * \l__jiazhu_bracket_ratio_fp } \l__jiazhu_unit_dim
+        - #2 \l__jiazhu_outer_unit_dim
+      }
+  }
+\dim_new:N \l__jiazhu_box_offset_dim
+\dim_new:N \l__jiazhu_mark_offset_dim
+\cs_new_protected:Npn \__jiazhu_put_box:N #1
+  {
+    \box_move_down:nn
+      { \l__jiazhu_box_offset_dim }
+      { \box_use_drop:N #1 }
+  }
+\cs_new_protected:Npn \__jiazhu_put_mark_box:N #1
+  {
+    \box_move_down:nn
+      { \l__jiazhu_mark_offset_dim }
+      { \box_use_drop:N #1 }
+  }
+\cs_new_protected:Npn \__jiazhu_set_before_skip:
+  {
+    \tl_if_empty:NTF \l__jiazhu_before_skip_tl
+      { \bool_set_false:N \l__jiazhu_before_skip_bool }
+      {
+        \bool_if:NT \l__jiazhu_before_skip_bool
+          {
+            \skip_set:Nn \l__jiazhu_before_skip
+              { \l__jiazhu_before_skip_tl }
+            \dim_compare:nNnF \l__jiazhu_remaining_width_dim = \c_max_dim
+              {
+                \dim_sub:Nn \l__jiazhu_remaining_width_dim
+                  {
+                      \l__jiazhu_before_skip
+                    - \tex_glueshrink:D \l__jiazhu_before_skip
+                  }
+              }
+          }
+      }
+  }
+\bool_new:N \l__jiazhu_before_skip_bool
+\skip_new:N \l__jiazhu_before_skip
+\cs_new_protected:Npn \__jiazhu_set_lines:n #1
+  {
+    \int_compare:nNnTF {#1} > \c_zero_int
+      {
+        \int_set:Nn \l__jiazhu_lines_int {#1}
+        \__jiazhu_make_parshape:n { \l__jiazhu_lines_int }
+      }
+      { \msg_error:nn { jiazhu } { invalid-number } }
+  }
+\cs_new_protected:Npn \__jiazhu_make_parshape:n #1
+  {
+    \cs_set_protected:Npx \__jiazhu_parshape:
+      {
+        \tex_parshape:D
+          \int_eval:n { #1 + 1 } ~
+          \prg_replicate:nn
+            {#1} { \c_zero_dim \l__jiazhu_remaining_width_dim }
+          \c_zero_dim \c_max_dim \scan_stop:
+      }
+  }
+\int_new:N \l__jiazhu_lines_int
+\cs_new_eq:NN \__jiazhu_parshape: \prg_do_nothing:
+\msg_new:nnn { jiazhu } { invalid-number }
+  { Please~specify~a~positive~integer. }
+\cs_new_protected:Npn \__jiazhu_set_alignment:n #1
+  { \cs_set_eq:Nc \__jiazhu_alignment: { __jiazhu_alignment_ #1 : } }
+\cs_new_protected:Npn \__jiazhu_alignment_justified:
+  {
+    \skip_zero:N \tex_leftskip:D
+    \skip_zero:N \tex_rightskip:D
+    \skip_set_eq:NN \tex_parfillskip:D \c__jiazhu_fil_skip
+  }
+\cs_new_protected:Npn \__jiazhu_alignment_left:
+  {
+    \skip_zero:N \tex_leftskip:D
+    \skip_set_eq:NN \tex_rightskip:D \l__jiazhu_alignment_skip
+    \skip_set_eq:NN \tex_parfillskip:D \c__jiazhu_fil_skip
+  }
+\cs_new_protected:Npn \__jiazhu_alignment_right:
+  {
+    \skip_set_eq:NN \tex_leftskip:D \l__jiazhu_alignment_skip
+    \skip_zero:N \tex_rightskip:D
+    \skip_zero:N \tex_parfillskip:D
+  }
+\cs_new_protected:Npn \__jiazhu_alignment_centered:
+  {
+    \skip_set_eq:NN \tex_leftskip:D \l__jiazhu_alignment_skip
+    \skip_set_eq:NN \tex_rightskip:D \l__jiazhu_alignment_skip
+    \skip_zero:N \tex_parfillskip:D
+  }
+\cs_new_protected:Npn \__jiazhu_alignment_distributed:
+  {
+    \skip_zero:N \tex_leftskip:D
+    \skip_zero:N \tex_rightskip:D
+    \skip_zero:N \tex_parfillskip:D
+    \int_set_eq:NN \tex_tolerance:D \c_max_int
+  }
+\skip_new:N \l__jiazhu_alignment_skip
+\cs_new_eq:NN \__jiazhu_alignment: \__jiazhu_alignment_justified:
+\skip_const:Nn \c__jiazhu_fil_skip { \c_zero_dim plus 1fil }
+\skip_set_eq:NN \l__jiazhu_alignment_skip \c__jiazhu_fil_skip
+\cs_new_protected:Npn \__jiazhu_processing:
+  {
+      \__jiazhu_split_lines:
+      \__jiazhu_put_closing_box:
+      \__jiazhu_good_break:
+      \__jiazhu_hskip:N \l__jiazhu_after_skip_tl
+    \group_end:
+    \tex_ignorespaces:D
+  }
+\cs_new_protected:Npn \__jiazhu_good_break:
+  {
+    \skip_horizontal:N \l__jiazhu_good_break_skip
+    \tex_penalty:D -100 ~
+    \skip_horizontal:n { -\l__jiazhu_good_break_skip }
+  }
+\skip_new:N \l__jiazhu_good_break_skip
+\cs_new_protected:Npn \__jiazhu_hskip:N #1
+  { \tl_if_empty:NF #1 { \skip_horizontal:n {#1} } }
+\cs_new_protected:Npn \__jiazhu_split_lines:
+  {
+    \dim_set:Nn \l__jiazhu_width_dim
+      {
+        \dim_max:nn
+          { \l__jiazhu_unit_dim }
+          { \box_wd:N \l__jiazhu_text_box / \l__jiazhu_lines_int }
+      }
+    \dim_compare:nNnTF \l__jiazhu_width_dim > \l__jiazhu_remaining_width_dim
+      { \__jiazhu_split_parshape_lines: }
+      { \__jiazhu_typeset_remaining: }
+  }
+\dim_new:N \l__jiazhu_width_dim
+\cs_new_protected:Npn \__jiazhu_split_parshape_lines:
+  {
+    \dim_compare:nNnTF \l__jiazhu_remaining_width_dim < \l__jiazhu_unit_dim
+      { \__jiazhu_split_parshape_lines_auxi: }
+      { \__jiazhu_split_parshape_lines_auxii: }
+  }
+\cs_new_protected:Npn \__jiazhu_split_parshape_lines_auxi:
+  {
+    \__jiazhu_fill_newline:
+    \dim_set:Nn \l__jiazhu_remaining_width_dim
+      { \l__jiazhu_line_width_dim - \box_wd:N \l__jiazhu_opening_box }
+    \bool_set_true:N \l__jiazhu_full_line_bool
+    \__jiazhu_split_lines:
+  }
+\cs_new_protected:Npn \__jiazhu_split_parshape_lines_auxii:
+  {
+    \vbox_set:Nn \l__jiazhu_text_box
+      {
+        \bool_if:NTF \l__jiazhu_full_line_bool
+          { \int_set:Nn \tex_looseness:D { -1 } }
+          { \__jiazhu_dim_normalize:N \l__jiazhu_remaining_width_dim }
+        \__jiazhu_parshape:
+        \hbox_unpack_drop:N \l__jiazhu_text_box
+      }
+    \vbox_set_split_to_ht:NNn \l__jiazhu_typeset_box
+      \l__jiazhu_text_box { \l__jiazhu_lines_int \tex_baselineskip:D }
+    \vbox_set:Nn \l__jiazhu_typeset_box
+      { \vbox_unpack:N \l__jiazhu_typeset_box }
+    \bool_if:NF \l__jiazhu_full_line_bool
+      { \skip_horizontal:N \l__jiazhu_unit_stretch_skip }
+    \__jiazhu_typeset:
+    \box_if_empty:NF \l__jiazhu_text_box
+      { \__jiazhu_split_remaining_lines: }
+  }
+\cs_new_protected:Npn \__jiazhu_fill_newline:
+  {
+    \tex_penalty:D \c__jiazhu_nobreak_int
+    \tex_hfil:D    \__jiazhu_newline:
+  }
+\cs_new_protected:Npn \__jiazhu_newline:
+  { \tex_penalty:D \c__jiazhu_break_int }
+\box_new:N \l__jiazhu_typeset_box
+\cs_new_protected:Npn \__jiazhu_split_remaining_lines:
+  {
+    \__jiazhu_newline:
+    \dim_set_eq:NN \l__jiazhu_remaining_width_dim \l__jiazhu_line_width_dim
+    \bool_set_true:N \l__jiazhu_full_line_bool
+    \__jiazhu_extract_hbox:Nn \l__jiazhu_text_box
+      { \tex_unskip:D \tex_unskip:D \tex_unpenalty:D }
+    \__jiazhu_split_lines:
+  }
+\cs_new_protected:Npn \__jiazhu_extract_hbox:Nn #1#2
+  {
+    \vbox_set:Nn #1
+      {
+        \vbox_unpack_drop:N #1
+        \box_gset_to_last:N \g__jiazhu_last_box
+      }
+    \hbox_set:Nn #1
+      {
+        \__jiazhu_insert_jzideoht_strut:
+        \hbox_unpack_drop:N \g__jiazhu_last_box #2
+      }
+  }
+\box_new:N \g__jiazhu_last_box
+\cs_new_protected:Npn \__jiazhu_dim_normalize:N #1
+  {
+    \dim_set:Nn #1
+      {
+        \int_div_truncate:nn {#1} { \l__jiazhu_unit_dim }
+        \l__jiazhu_unit_dim
+      }
+  }
+\cs_new_protected:Npn \__jiazhu_typeset:
+  {
+    \__jiazhu_put_opening_box:
+    \__jiazhu_put_box:N \l__jiazhu_typeset_box
+  }
+\cs_new_protected:Npn \__jiazhu_typeset_remaining:
+  {
+    \__jiazhu_dim_normalize:N \l__jiazhu_width_dim
+    \dim_set:Nn \l__jiazhu_step_dim
+      { \l__jiazhu_unit_dim / \l__jiazhu_lines_int }
+    \skip_set_eq:NN \l__jiazhu_alignment_skip \l__jiazhu_unit_stretch_skip
+    \__jiazhu_typeset_remaining_auxi:
+  }
+\cs_new_protected:Npn \__jiazhu_typeset_remaining_auxi:
+  {
+    \vbox_set:Nn \l__jiazhu_typeset_box
+      {
+        \__jiazhu_alignment:
+        \dim_set_eq:NN \tex_hsize:D \l__jiazhu_width_dim
+        \hbox_unpack:N \l__jiazhu_text_box \par
+        \int_gset_eq:NN \g__jiazhu_lines_int \tex_prevgraf:D
+      }
+    \int_compare:nNnTF \g__jiazhu_lines_int > \l__jiazhu_lines_int
+      { \__jiazhu_typeset_remaining_auxii: }
+      { \__jiazhu_typeset_remaining_auxiii: }
+  }
+\cs_new_protected:Npn \__jiazhu_typeset_remaining_auxii:
+  {
+    \dim_add:Nn \l__jiazhu_width_dim { \l__jiazhu_step_dim }
+    \__jiazhu_typeset_remaining_auxi:
+  }
+\cs_new_protected:Npn \__jiazhu_typeset_remaining_auxiii:
+  {
+    \__jiazhu_extract_max_width:N \l__jiazhu_typeset_box
+    \box_set_wd:Nn \l__jiazhu_typeset_box
+      { \dim_min:nn { \l__jiazhu_max_dim } { \l__jiazhu_width_dim } }
+    \int_compare:nNnF \g__jiazhu_lines_int = \l__jiazhu_lines_int
+      {
+        \box_set_ht:Nn \l__jiazhu_typeset_box
+          {
+            \int_eval:n { \l__jiazhu_lines_int - \g__jiazhu_lines_int }
+            \tex_baselineskip:D + \box_ht:N \l__jiazhu_typeset_box
+          }
+      }
+    \__jiazhu_typeset:
+  }
+\dim_new:N \l__jiazhu_step_dim
+\int_new:N \g__jiazhu_lines_int
+\cs_new_protected:Npn \__jiazhu_extract_max_width:N #1
+  {
+    \dim_zero:N \l__jiazhu_max_dim
+    \box_if_empty:NF #1
+      {
+        \box_set_eq:NN \l__jiazhu_tmpa_box #1
+        \dim_set:Nn \l__jiazhu_width_dim { \box_wd:N #1 }
+        \__jiazhu_extract_max_width_auxi:
+      }
+  }
+\cs_new_protected:Npn \__jiazhu_extract_max_width_auxi:
+  {
+    \vbox_set_split_to_ht:NNn \l__jiazhu_tmpb_box
+      \l__jiazhu_tmpa_box { \tex_baselineskip:D }
+    \__jiazhu_extract_hbox:Nn \l__jiazhu_tmpb_box
+      { \tex_unskip:D \tex_unskip:D \tex_unpenalty:D }
+    \dim_set:Nn \l__jiazhu_max_dim
+      {
+        \dim_max:nn
+          { \l__jiazhu_max_dim }
+          { \box_wd:N \l__jiazhu_tmpb_box }
+      }
+    \dim_compare:nNnT
+      { \box_wd:N \l__jiazhu_tmpb_box } > \l__jiazhu_width_dim
+      { \__jiazhu_extract_max_width_auxii: }
+    \box_if_empty:NF \l__jiazhu_tmpa_box
+      { \__jiazhu_extract_max_width_auxi: }
+  }
+\cs_new_protected:Npn \__jiazhu_extract_max_width_auxii:
+  {
+    \hbox_set_to_wd:Nnn \l__jiazhu_tmpb_box
+      { \l__jiazhu_width_dim }
+      { \hbox_unpack_drop:N \l__jiazhu_tmpb_box }
+    \int_compare:nNnF \tex_badness:D < { 1 000 000 }
+      {
+        \dim_add:Nn \l__jiazhu_width_dim { \l__jiazhu_step_dim }
+        \__jiazhu_extract_max_width_auxii:
+      }
+  }
+\dim_new:N \l__jiazhu_max_dim
+\AtBeginDocument { \__jiazhu_activate_shortcut: }
+\cs_new_protected:Npn \__jiazhu_activate_shortcut:
+  {
+    \seq_if_empty:NF \l__jiazhu_shortcut_seq
+      {
+        \seq_map_function:NN
+          \l__jiazhu_shortcut_seq \__jiazhu_add_shortcut_document:n
+      }
+    \cs_set_eq:NN \__jiazhu_add_shortcut_aux:n \__jiazhu_add_shortcut_document:n
+    \cs_set_eq:NN \__jiazhu_remove_shortcut:n \__jiazhu_remove_shortcut_document:n
+  }
+\cs_new_protected:Npn \__jiazhu_add_shortcut:n #1
+  {
+    \tl_if_blank:nF {#1}
+      { \__jiazhu_add_shortcut_aux:n {#1} }
+  }
+\cs_new_protected:Npn \__jiazhu_add_shortcut_aux:n
+  { \seq_put_right:Nn \l__jiazhu_shortcut_seq }
+\cs_new_protected:Npn \__jiazhu_remove_shortcuts:n #1
+  {
+    \tl_map_inline:nn {#1}
+      { \exp_args:Nf \__jiazhu_remove_shortcut:n { \int_to_arabic:n { `##1 } } }
+  }
+\cs_new_protected:Npn \__jiazhu_add_shortcut_document:n #1
+  {
+    \tl_if_single_token:nTF {#1}
+      { \__jiazhu_set_shortcut_group:N #1 }
+      { \__jiazhu_set_shortcut_delimiter:NNw #1 \q_stop }
+  }
+\cs_new_protected:Npn \__jiazhu_set_shortcut_group:N #1
+  { \exp_args:Nf \__jiazhu_set_shortcut_group:n { \int_to_arabic:n { `#1 } } }
+\cs_new_protected:Npn \__jiazhu_set_shortcut_group:n #1
+  {
+    \__jiazhu_save_shortcut:n {#1}
+    \char_set_active_eq:nN {#1} \jiazhu
+  }
+\cs_new_protected:Npn \__jiazhu_set_shortcut_delimiter:NNw #1#2#3 \q_stop
+  {
+    \__jiazhu_set_shortcut_delimiter:NNf #1#2
+      { \int_to_arabic:n { `#1 } }
+  }
+\cs_new_protected:Npn \__jiazhu_set_shortcut_delimiter:NNn #1#2
+  {
+    \str_if_eq:nnTF {#1} {#2}
+      { \__jiazhu_set_shortcut_delimiter:n }
+      { \__jiazhu_set_shortcut_delimiter:Nn #2 }
+  }
+\cs_generate_variant:Nn \__jiazhu_set_shortcut_delimiter:NNn { NNf }
+\cs_new_protected:Npn \__jiazhu_set_shortcut_delimiter:n #1
+  {
+    \__jiazhu_active_char:nn
+      { \__jiazhu_set_shortcut_delimiter:Nn } {#1} {#1}
+  }
+\cs_new_protected:Npn \__jiazhu_set_shortcut_delimiter:Nn #1#2
+  {
+    \exp_args:Ncc \__jiazhu_set_shortcut_delimiter_aux:NNNn
+      { __jiazhu_shortcut_ #2 :w }
+      { __jiazhu_shortcut_ #2 _aux:w }
+      #1 {#2}
+  }
+\cs_new_protected:Npn \__jiazhu_set_shortcut_delimiter_aux:NNNn #1#2#3#4
+  {
+    \__jiazhu_save_shortcut:n {#4}
+    \cs_set_protected:Npn #1
+      { \jiazhuoptiongrabber #2 }
+    \cs_set_protected:Npn #2 ##1##2 #3
+      { \jiazhu:nn { ##1 } { ##2 } }
+    \char_set_active_eq:nN {#4} #1
+  }
+\NewDocumentCommand \jiazhuoptiongrabber { +m +o }
+  { #1 {#2} }
+\cs_new_protected:Npn \__jiazhu_save_shortcut:n #1
+  {
+    \prop_get:NnNF \l__jiazhu_shortcut_prop {#1} \l__jiazhu_catcode_tl
+      {
+        \__jiazhu_save_active_char:n {#1}
+        \prop_put:Nnx \l__jiazhu_shortcut_prop
+          {#1} { \char_value_catcode:n {#1} }
+        \char_set_catcode_active:n {#1}
+      }
+  }
+\cs_new_protected:Npn \__jiazhu_remove_shortcut:n
+  { \seq_remove_all:Nn \l__jiazhu_shortcut_seq }
+\cs_new_protected:Npn \__jiazhu_remove_shortcut_document:n #1
+  {
+    \prop_pop:NnNT \l__jiazhu_shortcut_prop {#1} \l__jiazhu_catcode_tl
+      {
+        \char_set_catcode:nn {#1} { \l__jiazhu_catcode_tl }
+        \__jiazhu_restore_active_char:n {#1}
+      }
+  }
+\cs_new_protected:Npn \__jiazhu_save_active_char:n
+  { \__jiazhu_active_char_aux:Nn \__jiazhu_save_active_char:Nn }
+\cs_new_protected:Npn \__jiazhu_restore_active_char:n
+  { \__jiazhu_active_char_aux:Nn \__jiazhu_restore_active_char:Nn }
+\cs_new_protected:Npn \__jiazhu_active_char_aux:Nn #1#2
+  {
+    \group_begin: \exp_args:NNc \group_end:
+    #1 { __jiazhu_save_active_ #2 :w } {#2}
+  }
+\cs_new_protected:Npn \__jiazhu_save_active_char:Nn #1
+  { \__jiazhu_active_char:nn { \cs_set_eq:NN #1 } }
+\cs_new_protected:Npn \__jiazhu_restore_active_char:Nn #1#2
+  {
+    \char_set_active_eq:nN {#2} #1
+    \cs_set_eq:NN #1 \tex_undefined:D
+  }
+\group_begin:
+  \char_set_catcode_active:n { 0 }
+  \cs_new_protected:Npn \__jiazhu_active_char:nn #1#2
+    {
+      \group_begin:
+        \char_set_lccode:nn { 0 } {#2}
+      \tex_lowercase:D { \group_end: #1 ^^@ }
+    }
+\group_end:
+\tl_new:N \l__jiazhu_catcode_tl
+\seq_new:N \l__jiazhu_shortcut_seq
+\prop_new:N \l__jiazhu_shortcut_prop
+\keys_define:nn { jiazhu }
+  {
+    format               .tl_set:N = \l__jiazhu_format_tl ,
+    beforeskip           .tl_set:N = \l__jiazhu_before_skip_tl ,
+    afterskip            .tl_set:N = \l__jiazhu_after_skip_tl ,
+    opening              .tl_set:N = \l__jiazhu_opening_tl ,
+    closing              .tl_set:N = \l__jiazhu_closing_tl ,
+    ideohtratio          .fp_set:N = \l__jiazhu_ideoht_fp ,
+    jzideohtratio        .fp_set:N = \l__jiazhu_jzideoht_fp ,
+    ratio                .fp_set:N = \l__jiazhu_ratio_fp ,
+    bracketratio         .fp_set:N = \l__jiazhu_bracket_ratio_fp ,
+    baselineshift       .dim_set:N = \l__jiazhu_shift_dim ,
+    lines                  .code:n = \__jiazhu_set_lines:n {#1} ,
+    shortcut               .code:n = \__jiazhu_add_shortcut:n {#1} ,
+    shortcut-              .code:n = \__jiazhu_remove_shortcuts:n {#1} ,
+    alignment          .choices:nn =
+      { justified , left , right , centered , distributed }
+      { \__jiazhu_set_alignment:n { \l_keys_choice_tl } } ,
+    lines        .value_required:n = true ,
+    alignment    .value_required:n = true ,
+    shortcut     .value_required:n = true ,
+    shortcut-    .value_required:n = true ,
+    beforeskip          .initial:n = \smallskipamount ,
+    afterskip           .initial:n = \smallskipamount ,
+    ideohtratio         .initial:n = 0.5 ,
+    jzideohtratio       .initial:n = 0 ,
+    ratio               .initial:n = 2 / 3 ,
+    bracketratio        .initial:n = 2 ,
+    lines               .initial:n = 2 ,
+    alignment           .initial:n = justified
+  }
+\NewDocumentCommand \jiazhu { +o +m }
+  { \jiazhu:nn {#1} {#2} }
+\NewDocumentCommand \jiazhuset { }
+  { \keys_set:nn { jiazhu } }
+\sys_if_engine_luatex:F
+  {
+    \box_new:N \l__jiazhu_tmpa_box
+    \box_new:N \l__jiazhu_tmpb_box
+    \file_input_stop:
+  }
+\cs_gset_protected:Npn \__jiazhu_extract_max_width:N #1
+  {
+    \box_if_empty:NTF #1
+      { \dim_zero:N \l__jiazhu_max_dim }
+      {
+        \__jiazhu_extract_max_width_lua:N #1
+        \dim_set_eq:NN \l__jiazhu_width_dim \l__jiazhu_max_dim
+      }
+  }
+\cs_undefine:N \__jiazhu_extract_max_width_auxi:
+\cs_undefine:N \__jiazhu_extract_max_width_auxii:
+\group_begin:
+\char_set_catcode_space:n { 32 }
+\lua_now:n
+  {
+    jiazhu                = jiazhu or { }
+    local jiazhu          = jiazhu
+    local getbox          = tex.getbox
+    local getcount        = tex.getcount
+    local setdimen        = tex.setdimen
+    local scan_int        = token.scan_int
+    local id_hlist        = node.id("hlist")
+    local dnode           = node.direct
+    local getlist         = dnode.getlist
+    local todirect        = dnode.todirect
+    local traverse_id     = dnode.traverse_id
+    local rangedimensions = dnode.rangedimensions
+
+    function jiazhu.extract_max_width ()
+      local box = getbox(scan_int())
+      local width = 0
+      for hlist in traverse_id(id_hlist, getlist(todirect(box))) do
+        local w = rangedimensions(hlist, getlist(hlist))
+        if w > width then width = w end
+      end
+      setdimen("l__jiazhu_max_dim", width)
+    end
+
+    local id = luatexbase.new_luafunction("jiazhu")
+    local t = lua.get_functions_table()
+    t[id] = jiazhu.extract_max_width
+
+    token.set_lua("__jiazhu_extract_max_width_lua:N", id, "global", "protected")
+  }
+\group_end:
+%% 
+%%     This package consists of the file  jiazhu.dtx,
+%%                  and the derived files jiazhu.sty,
+%%                                        jiazhu.pdf,
+%%                                        jiazhu.ins,
+%%                                        jiazhu-test.tex, and
+%%                                        README.md (this file).
+%%
+%% End of file `jiazhu.sty'.

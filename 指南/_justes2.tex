@@ -8,10 +8,14 @@
 \newCJKfontfamily[puncts]\puncts[RawFeature={vertical:+vert}, ItalicFont=標點符號-R]{標點符號-R}
 \xeCJKsetup{PunctFamily=puncts, CJKecglue=\null}% 標點字型fangsung，漢字與西文、符號之間隔
 \setmainfont{仿宋}%Times New Roman
-\widowpenalty0
-\clubpenalty0
 
 \usepackage[backend=biber,style=ieee,citestyle=numeric,giveninits=true,sorting=none,maxbibnames=99,dashed=false,doi=false]{biblatex}
+\makeatletter
+\clubpenalty0
+\interlinepenalty=0
+\@clubpenalty \clubpenalty
+\widowpenalty0
+\makeatother
 \addbibresource{迩原參攷文獻.bib}
 \AtBeginBibliography{\vspace*{-10pt}}
 \setlength\bibitemsep{0pt}

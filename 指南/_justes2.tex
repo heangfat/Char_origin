@@ -1,24 +1,46 @@
 
-%\usepackage[colorlinks,linkcolor=靛青]{hyperref}% 影響扉䈎
+\usepackage[colorlinks,linkcolor=靛青]{hyperref}% 影響扉䈎
 \newcommand*\陰文[1]{\tikz[baseline=(char.base)]{
 			\node[shape=rectangle,fill=black!90,draw,inner sep=0pt] (char) {\color{white}#1};}}
 \setCJKmonofont[RawFeature={vertical:+vert}]{仿宋} % 等寬 for \texttt
-\setCJKsansfont[RawFeature={vertical:+vert}]{黑体} % 无襯綫 for \textsf %[Vertical=RotatedGlyphs]
+\setCJKsansfont[RawFeature={vertical:+vert}]{Noto Sans CJK KR} % 无襯綫 for \textsf %[Vertical=RotatedGlyphs]
 \newCJKfontfamily[fangsung]\fangsung[RawFeature={vertical:+vert}, ItalicFont=文悦古体仿宋 (非商业用途)]{FangSong}
 \newCJKfontfamily[puncts]\puncts[RawFeature={vertical:+vert}, ItalicFont=標點符號-R]{標點符號-R}
 \xeCJKsetup{PunctFamily=puncts, CJKecglue=\null}% 標點字型fangsung，漢字與西文、符號之間隔
 \setmainfont{仿宋}%Times New Roman
+\widowpenalty0
+\clubpenalty0
 
 \usepackage[backend=biber,style=ieee,citestyle=numeric,giveninits=true,sorting=none,maxbibnames=99,dashed=false,doi=false]{biblatex}
 \addbibresource{迩原參攷文獻.bib}
 \AtBeginBibliography{\vspace*{-10pt}}
 \setlength\bibitemsep{0pt}
 \renewcommand*{\newunitpunct}{　}
-\DeclareFieldFormat[article,incollection,unpublished,book]{title}{\fangsung#1}
+\renewcommand\multicitedelim{、}
+\renewcommand*{\citesetup}{%
+	\sffamily\fontsize{0.5em}{0}\selectfont
+	\biburlsetup
+	\frenchspacing}
+\DeclareCiteCommand{\cite}{〔}%\usebibmacro{prenote}
+{\usebibmacro{citeindex}%
+	\printtext[bibhyperref]{%
+		\printfield{prefixnumber}%
+		\rotatebox{90}{\kern-.5em\fontspec{筭數}[RawFeature={+ss01,+fwid}]{\printfield{labelnumber}}}%
+		\ifbool{bbx:subentry}
+		{\printfield{entrysetcount}}
+		{}}%
+}
+{\multicitedelim}%
+{〕}
+\DeclareFieldFormat[article,incollection,unpublished,book,inbook]{title}{\fangsung#1}
 \DeclareFieldFormat{labelnumberwidth}{\rotatebox{90}{\kern-.5em\fontspec{筭數}[RawFeature={+ss01,+fwid}]{#1}}}
-\DeclareFieldFormat[article,incollection,unpublished,book]{volume}{#1}
-\DeclareFieldFormat{pages}{\raisebox{-.3em}{#1}}
+\DeclareFieldFormat[article,incollection,unpublished,book,inbook]{volume}{#1}
+\DeclareFieldFormat{pages}{\raisebox{-.37em}{\fontspec{筭數}{#1}}}
 \DeclareFieldFormat{date}{\raisebox{-.3em}{#1}}
+\DeclareFieldFormat[inbook]{chapter}{\fangsung·#1}
+\DeclareDelimFormat{multinamedelim}{、}
+\DeclareDelimFormat{finalnamedelim}{、}
+%\bibrangedash
 \DeclareBibliographyDriver{book}{%
 	\printnames{author}%
 	\newunit\newblock
@@ -29,7 +51,7 @@
 	\printlist{location}%
 	\newunit\newblock
 	\rotatebox{90}{\kern-1.5em\fontspec{筭數}[RawFeature={+ss01}]{\printfield{year}}}年\printfield{month}%
-	%\finentry
+	\newunit\newblock\printfield{pages}
 }
 \DeclareBibliographyDriver{article}{%
 	\printnames{author}%
@@ -40,7 +62,21 @@
 	{\fangsung\printfield{volume}}%
 	\newunit\newblock\quad
 	\rotatebox{90}{\kern-1.5em\fontspec{筭數}[RawFeature={+ss01}]{\printfield{year}}}年\printfield{month}%
+	{\fangsung 䈎第}\printfield{pages}
 	%\finentry
+}
+\DeclareBibliographyDriver{inbook}{%
+	\printnames{author}%
+	\newunit\newblock
+	\printfield{title}%
+	\printfield{chapter}
+	\newunit\newblock
+	\printlist{publisher}%
+	\newunit
+	\printlist{location}%
+	\newunit\newblock
+	\rotatebox{90}{\kern-1.5em\fontspec{筭數}[RawFeature={+ss01}]{\printfield{year}}}年\printfield{month}%
+	{\fangsung 䈎第}\printfield{pages}
 }
 \DefineBibliographyStrings{english}{
 	january = \rotatebox{90}{\kern-.5em\fontspec{筭數}[RawFeature={+ss01,+fwid}]{1}}月,

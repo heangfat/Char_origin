@@ -1,5 +1,6 @@
-
+\usepackage{cncolours}
 \usepackage[colorlinks,linkcolor=靛青]{hyperref}% 影響扉䈎
+\hypersetup{colorlinks=true, citecolor=靛青}
 \newcommand*\陰文[1]{\tikz[baseline=(char.base)]{
 			\node[shape=rectangle,fill=black!90,draw,inner sep=0pt] (char) {\color{white}#1};}}
 \setCJKmonofont[RawFeature={vertical:+vert}]{仿宋} % 等寬 for \texttt
@@ -8,6 +9,7 @@
 \newCJKfontfamily[puncts]\puncts[RawFeature={vertical:+vert}, ItalicFont=標點符號-R]{標點符號-R}
 \xeCJKsetup{PunctFamily=puncts, CJKecglue=\null}% 標點字型fangsung，漢字與西文、符號之間隔
 \setmainfont{仿宋}%Times New Roman
+\defaultCJKfontfeatures{Script = CJK, RawFeature = vertical}
 \xeCJKsetup{
 	AutoFallBack=true,  %開啓字體回退，即字體遇到不能顯示的字符時，使用後備字體顯示
 }

@@ -1,3 +1,4 @@
+\usepackage{xeCJKfntef}
 \usepackage{cncolours}
 \usepackage[colorlinks,linkcolor=靛青]{hyperref}% 影響扉䈎
 \hypersetup{colorlinks=true, citecolor=靛青}
@@ -7,7 +8,7 @@
 \setCJKsansfont[RawFeature={vertical:+vert}]{Noto Sans CJK KR} % 无襯綫 for \textsf %[Vertical=RotatedGlyphs]
 \newCJKfontfamily[fangsung]\fangsung[RawFeature={vertical:+vert}, ItalicFont=文悦古体仿宋 (非商业用途)]{FangSong}
 \newCJKfontfamily[puncts]\puncts[RawFeature={vertical:+vert}, ItalicFont=標點符號-R]{標點符號-R}
-\xeCJKsetup{PunctFamily=puncts, CJKecglue=\null}% 標點字型fangsung，漢字與西文、符號之間隔
+\xeCJKsetup{PunctFamily=puncts, CJKecglue=\null, underwave={depth=0.5em,format=\color{赤}},underline={depth=0.5em,format=\color{赤},thickness=3\ULthickness}}% 標點字型fangsung，漢字與西文、符號之間隔，左畫綫去字遠近
 \setmainfont{仿宋}%Times New Roman
 \defaultCJKfontfeatures{Script = CJK, RawFeature = vertical}
 \xeCJKsetup{

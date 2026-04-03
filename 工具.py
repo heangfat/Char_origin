@@ -1,4 +1,5 @@
-import pandas as pd;import numpy as np;from collections import Counter
+import pandas as pd;import numpy as np;from collections import Counter;import re
+import matplotlib.pyplot as plt;import matplotlib.font_manager
 冓 = {"⿰":2,"⿲":3,"⿱":2,"⿳":3,"⿴":2,"⿵":2,"⿶":2,"⿷":2,"⿸":2,"⿹":2,"⿺":2,"⿻":2,"⿼":2,"⿽":2,"⿾":1,"⿿":1,"▤":4,"𝍤":5,"Ｔ":3,"Ｙ":3,"⸫":1,"⸬":1,"▥":4,"∪":2,"∃":2,"∞":2}# 所有構形及其後所領下級數
 挪用歸并件 = ["戶戸","辛⾟","宀𰃦","鳥𩾑"]# 肩、倒〬三角頭飾、牢、鷄之初文
 挪用反倒轉件 = ["阜阝","舟⾈","水⽔","弓⼸𢎜","矢⽮","臣⾂","𠂤𠕉","皿亚"]# 雋之弓與矰之初文、受之舟、臦之反臣、益之水、射之矢、殿所从
@@ -86,26 +87,59 @@ def 攏(字列):
 			代排字 = 字
 		序.append(代排字)
 	return 序
-未列字 = [];有字无解 = []
-def 窮解(構字式:str, 全表:pd.DataFrame):
-	解式 = ''
-	for 字幹 in 構字式:
-		if ord(字幹) < 0x3000 or (ord(字幹) >= 0xff00 and ord(字幹) < 0xfff0) or 字幹 == '𝍤':
-			解式 += 字幹
-			continue
-		解字幹 = 全表.loc[全表["漢字"]==字幹, "迩原正解"]
-		if len(解字幹) < 1:
-			未列字.append(字幹)
-			解式 += 字幹;continue
-		解字幹 = 解字幹.item()
-		if 解字幹 == '':
-			有字无解.append(字幹)
-			解式 += 字幹
-		else:
-			if 解字幹 != 字幹:
-				解字幹 = 窮解(解字幹, 全表)
-			解式 += 解字幹
-	return 解式
+class 處理碼表():
+	def __init__(self, 碼表:pd.DataFrame):
+		self.碼表 = 碼表.fillna('')
+		self.未列字 = []
+		self.有字无解 = []
+	def 統計(self, 圖=False):
+		所有構件 = self.碼表['迩原正解'].str.cat(sep='') + self.碼表['迩原或解'].astype(str).str.cat(sep='') + self.碼表['迩原別解'].astype(str).str.cat(sep='') + self.碼表['迩原又解'].astype(str).str.cat(sep='')
+		所有部件 = re.sub('['+(''.join(冓.keys()))+']','',所有構件)
+		計 = Counter(所有部件)
+		if 圖:
+			plt.rcParams["font.family"] = "Noto Sans CJK JP", "KaiXinSongB"
+			plt.figure(dpi=100).set_figwidth(300)
+			plt.bar(*zip(*計.most_common()), width=4)
+			plt.show()
+			plt.figure().get_dpi()
+		return 計
+	def 窮解(self, 構字式:str):
+		解式 = ''
+		for 字幹 in 構字式:
+			if ord(字幹) < 0x3000 or (ord(字幹) >= 0xff00 and ord(字幹) < 0xfff0) or 字幹 == '𝍤':
+				解式 += 字幹
+				continue
+			解字幹 = self.碼表.loc[self.碼表["漢字"]==字幹, "迩原正解"]
+			if len(解字幹) < 1:
+				self.未列字.append(字幹)
+				解式 += 字幹;continue
+			解字幹 = 解字幹.item()
+			if 解字幹 == '':
+				self.有字无解.append(字幹)
+				解式 += 字幹
+			else:
+				if 解字幹 != 字幹:
+					解字幹 = self.窮解(解字幹, self.碼表)
+				解式 += 解字幹
+		return 解式
+	def 校覈(self):
+		覈 = self.碼表["迩原正解"].apply(lambda z: 檢構字式(z,報=False))
+		符多部少 = self.碼表["漢字"].loc[覈==2];符少部多 = self.碼表["漢字"].loc[覈==3]
+		if len(符多部少) > 0:
+			print(f'下列 {len(符多部少)} 字或有宂餘結構符（缺少部件），或順序有誤：{符多部少.str.cat(sep='、')}')
+		if len(符少部多) > 0:
+			print(f'下列 {len(符少部多)} 字或有宂餘部件（缺少結構符），或順序有誤：{符少部多.str.cat(sep='、')}')
+		return [符多部少,符少部多]
+	def 排序(self):
+		碼表排序 = self.碼表.sort_values(by='漢字', axis=0)
+		碼表排序["敘數"] = 碼表排序["漢字"].apply(lambda z: 綜敘(z))
+		碼表排序.loc[碼表排序["漢字"]==碼表排序["迩原正解"], "敘數"] -= 0x100000
+		# 碼表排序 = 碼表排序.sort_values(by=['漢字'], axis=0, key=攏)
+		# 碼表排序 = 碼表排序.sort_values(by=['迩原正解'], axis=0, key=依構件排序)
+		碼表排序 = 碼表排序.sort_values(by='敘數', axis=0)
+		# 碼表排序 = 碼表排序.sort_values(by=['備註'], axis=0, key=依備註排序)
+		碼表排序.drop(columns=['敘數'], inplace=True)
+		return 碼表排序
 # def 并異體(表):
 # 	異體類型 = ['共產','偏旁','倭','異體','附','訛']
 # 	表.loc[表["六書"]!='共產', "異體類型"] = ''

@@ -103,10 +103,10 @@ class 處理碼表():
 			plt.show()
 			plt.figure().get_dpi()
 		return 計
-	def 窮解(self, 構字式:str):
+	def 解幹(self, 構字式:str, 文=True):
 		解式 = ''
 		for 字幹 in 構字式:
-			if ord(字幹) < 0x3000 or (ord(字幹) >= 0xff00 and ord(字幹) < 0xfff0) or 字幹 == '𝍤':
+			if 字幹 in 冓.keys():#ord(字幹) < 0x3000 or (ord(字幹) >= 0xff00 and ord(字幹) < 0xfff0) or 字幹 == '𝍤':
 				解式 += 字幹
 				continue
 			解字幹 = self.碼表.loc[self.碼表["漢字"]==字幹, "迩原正解"]
@@ -118,10 +118,34 @@ class 處理碼表():
 				self.有字无解.append(字幹)
 				解式 += 字幹
 			else:
-				if 解字幹 != 字幹:
-					解字幹 = self.窮解(解字幹, self.碼表)
+				if 文 and 解字幹 != 字幹:
+					解字幹 = self.解幹(解字幹)
 				解式 += 解字幹
 		return 解式
+	def 迭代解幹(self):
+		迭代一 = self.碼表既序["迩原正解"].copy()
+		self.碼表既序["迩原正解窮"] = self.碼表既序["迩原正解"].apply(lambda x: self.解幹(x, False))
+		異條 = self.碼表既序["迩原正解窮"] != 迭代一
+		計數 = 0
+		while (異條).any():
+			迭代一 = self.碼表既序["迩原正解窮"].copy()
+			self.碼表既序.loc[異條, "迩原正解窮"] = self.碼表既序.loc[異條, "迩原正解窮"].apply(lambda x: self.解幹(x, False))
+			異條 = self.碼表既序["迩原正解窮"] != 迭代一
+			計數 += 1
+			print(f'迭代了 {計數} 次，餘 {len(異條.loc[異條==True])} 條未窮解')
+		self.未列字 = list(set(self.未列字));self.有字无解 = list(set(self.有字无解))
+		未列字數 = len(self.未列字);无解字數 = len(self.有字无解)
+		if 未列字數 > 0:
+			print(f'此 {未列字數} 字未列：{"、".join(self.未列字)}。')
+		if 无解字數 > 0:
+			print(f'此 {无解字數} 字无正解：{"、".join(self.有字无解)}。')
+		if 未列字數 > 0 or 无解字數 > 0:
+			print(f'請補齊上述 {未列字數+无解字數} 字後再運行。')
+		else:
+			print('蕆。')
+		差異 = self.碼表既序["迩原正解"].compare(self.碼表既序["迩原正解窮"], result_names=('字幹式','文式'))
+		self.碼表 = self.碼表既序.rename(columns={"迩原正解":"正解榦式","迩原正解窮":"迩原正解"})
+		return 差異
 	def 校覈(self):
 		覈 = self.碼表["迩原正解"].apply(lambda z: 檢構字式(z,報=False))
 		符多部少 = self.碼表["漢字"].loc[覈==2];符少部多 = self.碼表["漢字"].loc[覈==3]
@@ -139,6 +163,7 @@ class 處理碼表():
 		碼表排序 = 碼表排序.sort_values(by='敘數', axis=0)
 		# 碼表排序 = 碼表排序.sort_values(by=['備註'], axis=0, key=依備註排序)
 		碼表排序.drop(columns=['敘數'], inplace=True)
+		self.碼表既序 = 碼表排序
 		return 碼表排序
 # def 并異體(表):
 # 	異體類型 = ['共產','偏旁','倭','異體','附','訛']

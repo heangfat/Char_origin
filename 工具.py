@@ -1,5 +1,6 @@
 import pandas as pd;import numpy as np;from collections import Counter;import re
 import matplotlib.pyplot as plt;import matplotlib.font_manager
+import time
 冓 = {"⿰":2,"⿲":3,"⿱":2,"⿳":3,"⿴":2,"⿵":2,"⿶":2,"⿷":2,"⿸":2,"⿹":2,"⿺":2,"⿻":2,"⿼":2,"⿽":2,"⿾":1,"⿿":1,"▤":4,"𝍤":5,"Ｔ":3,"Ｙ":3,"⸫":1,"⸬":1,"▥":4,"∪":2,"∃":2,"∞":2}# 所有構形及其後所領下級數
 挪用歸并件 = ["戶戸","辛⾟","宀𰃦","鳥𩾑","十⼗"]# 肩、倒〬三角頭飾、牢、鷄之初文、古上
 挪用反倒轉件 = ["阜阝","舟⾈","水⽔","弓⼸𢎜","矢⽮","臣⾂","𠂤𠕉","皿亚"]# 雋之弓與矰之初文、受之舟、臦之反臣、益之水、射之矢、殿所从
@@ -125,9 +126,11 @@ class 處理碼表():
 		所有部件 = re.sub('['+(''.join(冓.keys()))+']','',所有構件)
 		計 = Counter(所有部件)
 		if 圖:
-			plt.rcParams["font.family"] = "Noto Sans CJK JP", "KaiXinSongB"
+			plt.rcParams["font.family"] = "sans-serif"
+			plt.rcParams["font.sans-serif"] = ["KaiTi","Noto Sans CJK JP","FZNewKai_GB18030L3","KaiXinSongB"]
+			plt.rcParams["font.size"] = 18
 			plt.figure(dpi=100).set_figwidth(300)
-			plt.bar(*zip(*計.most_common()), width=4)
+			plt.bar(*zip(*計.most_common()), width=1)
 			plt.show()
 			plt.figure().get_dpi()
 		return 計
@@ -156,11 +159,12 @@ class 處理碼表():
 		異條 = self.碼表既序["迩原正解窮"] != 迭代一
 		計數 = 0
 		while (異條).any():
+			計時 = time.perf_counter()
 			迭代一 = self.碼表既序["迩原正解窮"].copy()
 			self.碼表既序.loc[異條, "迩原正解窮"] = self.碼表既序.loc[異條, "迩原正解窮"].apply(lambda x: self.解幹(x, False))
 			異條 = self.碼表既序["迩原正解窮"] != 迭代一
 			計數 += 1
-			print(f'迭代了 {計數} 次，餘 {len(異條.loc[異條==True])} 條未窮解')
+			print(f'迭代了 {計數} 次，餘 {len(異條.loc[異條==True])} 條未窮解，本次耗時 {time.perf_counter()-計時:.2f} 秒')
 		self.未列字 = list(set(self.未列字));self.有字无解 = list(set(self.有字无解))
 		未列字數 = len(self.未列字);无解字數 = len(self.有字无解)
 		if 未列字數 > 0:

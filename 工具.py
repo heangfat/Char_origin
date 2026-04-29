@@ -194,8 +194,11 @@ class 飭碼表():
 		for 解名 in self.解之名:
 			self.碼表[解名+"鍵"] = self.碼表["迩原"+解名].apply(lambda x: 後置主冓(補全褈件(x)))
 	def 校覈(self):
-		覈 = self.碼表["迩原正解"].apply(lambda z: 檢構字式(z,報=False))
-		符多部少 = self.碼表["漢字"].loc[覈==2];符少部多 = self.碼表["漢字"].loc[覈==3]
+		覈 = {}
+		for g in self.解之名:
+			覈[g] = self.碼表["迩原"+g].apply(lambda z: 檢構字式(z,報=False))
+		符多部少 = self.碼表["漢字"].loc[(覈[self.解之名[0]]==2)|(覈[self.解之名[1]]==2)|(覈[self.解之名[2]]==2)|(覈[self.解之名[3]]==2)]
+		符少部多 = self.碼表["漢字"].loc[(覈[self.解之名[0]]==3)|(覈[self.解之名[1]]==3)|(覈[self.解之名[2]]==3)|(覈[self.解之名[3]]==3)]
 		if len(符多部少) > 0:
 			print(f'下列 {len(符多部少)} 字或有宂餘結構符（缺少部件），或順序有誤：{符多部少.str.cat(sep='、')}')
 		if len(符少部多) > 0:

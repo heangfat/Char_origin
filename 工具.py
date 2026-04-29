@@ -138,7 +138,7 @@ class 飭碼表():
 		計 = Counter(所有文)
 		if 圖:
 			plt.rcParams["font.family"] = "sans-serif"
-			plt.rcParams["font.sans-serif"] = ["KaiTi","Noto Sans CJK JP","FZNewKai_GB18030L3","KaiXinSongB"]
+			plt.rcParams["font.sans-serif"] = ["FZNewKai_GB18030L2","Noto Sans CJK JP","FZNewKai_GB18030L3","KaiXinSongB"]
 			plt.rcParams["font.size"] = 18
 			plt.figure().set_figwidth(300)#dpi=100
 			plt.bar(*zip(*計.most_common()), width=1)
@@ -212,6 +212,15 @@ class 飭碼表():
 		碼表排序.drop(columns=['敘數'], inplace=True)
 		self.碼表既序 = 碼表排序
 		return 碼表排序
+
+def 求字頻(詞頻表:pd.DataFrame):
+	""" 宂碼等 """
+class 優化布文():
+	""" 每鈕九文。文在語料庫裡字頻最高者，約九分之一，居中，擊單鍵默認輸入之；餘九分之八文，以合體字之字頻加權重〪碼率為目標函數，以共鈕關係為約束條件，環列于周。 """
+	def __init__(self, 碼表:pd.DataFrame):
+		self.无權碼表 = 碼表
+	def 字頻(self, 字頻表:pd.DataFrame):
+		self.碼表 = pd.merge(self.无權碼表, 字頻表, on='漢字')
 # def 并異體(表):
 # 	異體類型 = ['共產','偏旁','倭','異體','附','訛']
 # 	表.loc[表["六書"]!='共產', "異體類型"] = ''
